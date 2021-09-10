@@ -1,3 +1,6 @@
+"""
+Simple library for sending events to Splunk HTTP Event Collector (HEC)
+"""
 import json
 import logging
 
@@ -12,19 +15,21 @@ class SplunkHECWriter:
     """
 
     def __init__(
-        self,
-        splunk_host: str,
-        splunk_hec_token: str,
-        splunk_port: int = 8088,
-        sourcetype: str = "httpevent",
-        index: str = "main",
-        http_scheme: str = "https",
-        source: str = socket.getfqdn(),
-        host: str = socket.getfqdn(),
-        verify_ssl: bool = True,
+            self,
+            splunk_host: str,
+            splunk_hec_token: str,
+            splunk_port: int = 8088,
+            sourcetype: str = "httpevent",
+            index: str = "main",
+            http_scheme: str = "https",
+            source: str = socket.getfqdn(),
+            host: str = socket.getfqdn(),
+            verify_ssl: bool = True,
     ):
         self.hec_session = requests.Session()
-        self.url = f"{http_scheme}://{splunk_host}:{splunk_port}/services/collector/event"
+        self.url = (
+            f"{http_scheme}://{splunk_host}:{splunk_port}/services/collector/event"
+        )
         self.headers = {"Authorization": f"Splunk {splunk_hec_token}"}
         self.sourcetype = sourcetype
         self.source = source
@@ -47,7 +52,8 @@ class SplunkHECWriter:
         }
 
         response = self.hec_session.post(
-            url=self.url, headers=self.headers, json=payload, verify=self.verify_ssl)
+            url=self.url, headers=self.headers, json=payload, verify=self.verify_ssl
+        )
 
         if response.status_code != 200:
             err_msg = f"Send hec msg failed! response: {response.text}"
@@ -76,7 +82,7 @@ class SplunkHECWriter:
         """
         Send events to Splunk HEC collector
         """
-        payload_str = ''
+        payload_str = ""
 
         for msg in msgs:
             payload = {
@@ -92,7 +98,11 @@ class SplunkHECWriter:
 
         for i in range(0, 9):
             response = self.hec_session.post(
-                url=self.url, headers=self.headers, data=payload_str, verify=self.verify_ssl)
+                url=self.url,
+                headers=self.headers,
+                data=payload_str,
+                verify=self.verify_ssl,
+            )
 
             if response.status_code != 200:
                 err_msg = f"Send hec msg failed! response: {response.text}"
