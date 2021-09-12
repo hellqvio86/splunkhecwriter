@@ -43,7 +43,12 @@ Library for sending log events to Splunk
   source = 'hec'
   host = 'foobar'
 
-  hec_writer = SplunkHECWriter(splunk_host=splunk_server, splunk_hec_token=hec_token, sourcetype=sourcetype, source=source, host=host)
+  hec_writer = SplunkHECWriter(
+    splunk_host=splunk_server,
+    splunk_hec_token=hec_token,
+    sourcetype=sourcetype,
+    source=source,
+    host=host)
 
   msg =  { 'foo': 'bar' }
   hec_writer.send_msg(msg=msg)
