@@ -33,6 +33,23 @@ Library for sending log events to Splunk
 
 ```
 
+## Example Code block 3
+```python
+
+  from splunkhecwriter import SplunkHECWriter
+  hec_token = '<HEC-TOKEN-HERE>'
+  splunk_server = '127.0.0.1'
+  sourcetype= 'foobar:json'
+  source = 'hec'
+  host = 'foobar'
+
+  hec_writer = SplunkHECWriter(splunk_host=splunk_server, splunk_hec_token=hec_token, sourcetype=sourcetype, source=source, host=host)
+
+  msg =  { 'foo': 'bar' }
+  hec_writer.send_msg(msg=msg)
+
+```
+
 ## License
 
 This project is licensed under the Apache License - see the [LICENSE.md](LICENSE.md) file for details
