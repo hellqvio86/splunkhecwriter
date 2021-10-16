@@ -84,52 +84,65 @@ class SplunkHECWriter:
 
         return response
 
-    def send_msgs(self, msgs: list, event_time: float = time.time(), limit: int = 100) -> requests.Response:
+    def send_msgs(self, *, msgs: list, event_time: float = time.time(), limit: int = 100) -> requests.Response:
         """
         Send events to Splunk HEC collector
         """
-        payload_str = ""
         last_response = None
+        base = 0
+        not_done = True
+        length = len(msgs)
 
-        counter = 0
-        for msg in msgs:
-            payload = {
-                "source": self.source,
-                "sourcetype": self.sourcetype,
-                "time": event_time,
-                "host": self.host,
-                "index": self.index,
-                "event": json.dumps(msg),
-            }
+        while(not_done):
+            payload_str = ""
+            for i in range(base, base+limit):
+                msg = None
 
-            payload_str += json.dumps(payload)
-
-            counter += 1
-
-            if counter >= limit:
-                counter = 0
-                for i in range(0, 9):
-                    last_response = self.hec_session.post(
-                        url=self.url,
-                        headers=self.headers,
-                        data=payload_str,
-                        verify=self.verify_ssl,
-                    )
-
-                    if last_response.status_code == 400:
-                        response_data = json.loads(last_response.text)
-
-                        if response_data["text"] == "No data" and response_data["code"] == 5:
-                            # OK event
-                            break
-
-                    if last_response.status_code != 200:
-                        err_msg = f"Send hec msg failed! response: {last_response.text}"
-                        logging.error(err_msg)
-
-                        time.sleep(10)
-                        continue
-
+                if i >= length:
+                    not_done = False
                     break
+
+                try:
+                    msg = msgs[i]
+                except IndexError:
+                    not_done = False
+                    break
+
+                payload = {
+                    "source": self.source,
+                    "sourcetype": self.sourcetype,
+                    "time": event_time,
+                    "host": self.host,
+                    "index": self.index,
+                    "event": json.dumps(msg),
+                }
+
+                payload_str += json.dumps(payload) + "\n"
+
+            base += limit
+
+            for i in range(0, 9):
+                last_response = self.hec_session.post(
+                    url=self.url,
+                    headers=self.headers,
+                    data=payload_str,
+                    verify=self.verify_ssl,
+                )
+
+                if last_response.status_code == 400:
+                    response_data = json.loads(last_response.text)
+
+                    if response_data["text"] == "No data" and response_data["code"] == 5:
+                        # Splunks index messages even the error code is 400 and the text response is "No data" code 5
+                        break
+
+                if last_response.status_code != 200:
+                    err_msg = f"Send hec msg failed! status_code: {last_response.status_code} response: {last_response.text}"
+                    logging.error(err_msg)
+
+                    time.sleep(10.0)
+                    continue
+
+                break
 
         return last_response
