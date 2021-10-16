@@ -11,7 +11,7 @@ setup(
     name='splunkhecwriter',
     packages=find_packages('src'),
     package_dir={'': 'src'},
-    version='0.004',
+    version='0.4',
     license='MIT',
     description='Library for sending events to Splunk HEC',
     long_description=long_description,
