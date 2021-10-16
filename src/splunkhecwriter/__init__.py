@@ -38,14 +38,14 @@ class SplunkHECWriter:
 
         self.verify_ssl = verify_ssl
 
-    def __send_msg(self, msg: dict, time: float = time.time()) -> requests.Response:
+    def __send_msg(self, msg: dict, event_time: float = time.time()) -> requests.Response:
         """
         Send event to Splunk HEC collector
         """
         payload = {
             "source": self.source,
             "sourcetype": self.sourcetype,
-            "time": time,
+            "time": event_time,
             "host": self.host,
             "index": self.index,
             "event": json.dumps(msg),
@@ -63,14 +63,20 @@ class SplunkHECWriter:
 
         return response
 
-    def send_msg(self, msg: dict, time: float = time.time()) -> requests.Response:
+    def send_msg(self, msg: dict, event_time: float = time.time()) -> requests.Response:
         """
         Send event to Splunk HEC collector
+
+        Keyword arguments:
+        msg -- dict message to sned
+        time -- event time
+
+        Return request Response
         """
         response = None
         for i in range(0, 9):
             try:
-                response = self.__send_msg(msg=msg, time=time)
+                response = self.__send_msg(msg=msg, event_time=event_time)
                 break
             except IOError:
                 time.sleep(10)
@@ -78,17 +84,19 @@ class SplunkHECWriter:
 
         return response
 
-    def send_msgs(self, msgs: list, time: float = time.time()) -> requests.Response:
+    def send_msgs(self, msgs: list, event_time: float = time.time(), limit: int = 100) -> requests.Response:
         """
         Send events to Splunk HEC collector
         """
         payload_str = ""
+        last_response = None
 
+        counter = 0
         for msg in msgs:
             payload = {
                 "source": self.source,
                 "sourcetype": self.sourcetype,
-                "time": time,
+                "time": event_time,
                 "host": self.host,
                 "index": self.index,
                 "event": json.dumps(msg),
@@ -96,21 +104,32 @@ class SplunkHECWriter:
 
             payload_str += json.dumps(payload)
 
-        for i in range(0, 9):
-            response = self.hec_session.post(
-                url=self.url,
-                headers=self.headers,
-                data=payload_str,
-                verify=self.verify_ssl,
-            )
+            counter += 1
 
-            if response.status_code != 200:
-                err_msg = f"Send hec msg failed! response: {response.text}"
-                logging.error(err_msg)
+            if counter >= limit:
+                counter = 0
+                for i in range(0, 9):
+                    last_response = self.hec_session.post(
+                        url=self.url,
+                        headers=self.headers,
+                        data=payload_str,
+                        verify=self.verify_ssl,
+                    )
 
-                time.sleep(10)
-                continue
+                    if last_response.status_code == 400:
+                        response_data = json.loads(last_response.text)
 
-            break
+                        if response_data["text"] == "No data" and response_data["code"] == 5:
+                            # OK event
+                            break
 
-        return response
+                    if last_response.status_code != 200:
+                        err_msg = f"Send hec msg failed! response: {last_response.text}"
+                        logging.error(err_msg)
+
+                        time.sleep(10)
+                        continue
+
+                    break
+
+        return last_response
