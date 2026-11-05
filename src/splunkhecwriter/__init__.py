@@ -3,17 +3,21 @@ Simple library for sending events to Splunk HTTP Event Collector (HEC)
 """
 import json
 import logging
-
-import requests
 import socket
 import time
 
+import requests
 
+
+# The constructor's arguments and stored attributes are part of the existing
+# public API, so keep that shape stable.
+# pylint: disable=too-many-instance-attributes
 class SplunkHECWriter:
     """
     Simple SplunkHECWriter
     """
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
             self,
             splunk_host: str,
@@ -74,7 +78,7 @@ class SplunkHECWriter:
         Return request Response
         """
         response = None
-        for i in range(0, 9):
+        for _ in range(0, 9):
             try:
                 response = self.__send_msg(msg=msg, event_time=event_time)
                 break
@@ -84,7 +88,13 @@ class SplunkHECWriter:
 
         return response
 
-    def send_msgs(self, *, msgs: list, event_time: float = time.time(), limit: int = 100) -> requests.Response:
+    def send_msgs(
+        self,
+        *,
+        msgs: list,
+        event_time: float = time.time(),
+        limit: int = 100,
+    ) -> requests.Response:
         """
         Send events to Splunk HEC collector
         """
@@ -93,7 +103,7 @@ class SplunkHECWriter:
         not_done = True
         length = len(msgs)
 
-        while(not_done):
+        while not_done:
             payload_str = ""
             for i in range(base, base+limit):
                 msg = None
@@ -133,11 +143,16 @@ class SplunkHECWriter:
                     response_data = json.loads(last_response.text)
 
                     if response_data["text"] == "No data" and response_data["code"] == 5:
-                        # Splunks index messages even the error code is 400 and the text response is "No data" code 5
+                        # Splunk indexes these messages despite returning the
+                        # "No data" response with code 5.
                         break
 
                 if last_response.status_code != 200:
-                    err_msg = f"Send hec msg failed! status_code: {last_response.status_code} response: {last_response.text}"
+                    err_msg = (
+                        "Send hec msg failed! "
+                        f"status_code: {last_response.status_code} "
+                        f"response: {last_response.text}"
+                    )
                     logging.error(err_msg)
 
                     time.sleep(10.0)

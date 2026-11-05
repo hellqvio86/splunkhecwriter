@@ -1,9 +1,16 @@
-setup: requirements.txt
-	pip install -r requirements.txt
+.PHONY: setup lint clean build upload
+
+setup:
+	uv sync --locked --group dev
+
+lint:
+	uv run --locked pylint src/splunkhecwriter
+
 clean:
-	rm -rf __pycache__
+	rm -rf __pycache__ build dist src/*.egg-info
+
 build:
-	python3 setup.py sdist bdist_wheel
-upload:
-	python3 setup.py sdist bdist_wheel; twine upload dist/*
-.PHONY: build clean upload
+	uv build
+
+upload: build
+	uv publish

@@ -3,6 +3,8 @@
 # splunkhecwriter
 Library for sending log events to Splunk
 
+Requires Python 3.11 or newer. CI checks the currently supported Python releases.
+
 ## Example Code block 1
 ```python
 
@@ -53,6 +55,17 @@ Library for sending log events to Splunk
   msg =  { 'foo': 'bar' }
   hec_writer.send_msg(msg=msg)
 
+```
+
+## Development
+
+The package requires Python 3.11 or newer. CI checks currently supported releases 3.11–3.15.
+
+Use [uv](https://docs.astral.sh/uv/) to set up the development environment and run checks:
+
+```sh
+uv sync --locked --group dev
+uv run --locked pylint src/splunkhecwriter
 ```
 
 ## License
