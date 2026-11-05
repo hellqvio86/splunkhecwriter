@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "splunkhecwriter"
-version = "0.4"
+version = "0.5.0"
 description = "Library for sending events to Splunk HEC"
 readme = "README.md"
 requires-python = ">=3.11"
-license = "MIT"
+license = "Apache-2.0"
 authors = [{ name = "Olof Hellqvist", email = "olof.hellqvist@gmail.com" }]
 keywords = ["splunk", "hec"]
 dependencies = ["requests"]
@@ -26,6 +26,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/hellqvio86/splunkhecwriter"
+Repository = "https://github.com/hellqvio86/splunkhecwriter"
 Issues = "https://github.com/hellqvio86/splunkhecwriter/issues"
 
 [dependency-groups]
