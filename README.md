@@ -3,6 +3,8 @@
 # splunkhecwriter
 Library for sending log events to Splunk
 
+Requires Python 3.11 or newer. CI checks the currently supported Python releases.
+
 ## Example Code block 1
 ```python
 
