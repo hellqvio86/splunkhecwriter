@@ -57,6 +57,17 @@ Requires Python 3.11 or newer. CI checks the currently supported Python releases
 
 ```
 
+## Development
+
+The package requires Python 3.11 or newer. CI checks currently supported releases 3.11–3.15.
+
+Use [uv](https://docs.astral.sh/uv/) to set up the development environment and run checks:
+
+```sh
+uv sync --locked --group dev
+uv run --locked pylint src/splunkhecwriter
+```
+
 ## License
 
 This project is licensed under the Apache License - see the [LICENSE.md](LICENSE.md) file for details
