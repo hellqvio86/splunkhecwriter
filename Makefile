@@ -1,4 +1,4 @@
-.PHONY: setup lint clean build upload
+.PHONY: setup lint clean build upload renovate renovate-summary
 
 setup:
 	uv sync --locked --group dev
@@ -14,3 +14,10 @@ build:
 
 upload: build
 	uv publish
+
+renovate:
+	@./bin/renovate/run.sh
+
+renovate-summary:
+	@./bin/renovate/run.sh --summary
+
