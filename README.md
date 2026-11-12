@@ -1,4 +1,4 @@
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/splunkhecwriter) ![PyPI](https://img.shields.io/pypi/v/splunkhecwriter) ![GitHub](https://img.shields.io/github/license/hellqvio86/splunkhecwriter) ![GitHub issues](https://img.shields.io/github/issues-raw/hellqvio86/splunkhecwriter) ![GitHub last commit](https://img.shields.io/github/last-commit/hellqvio86/splunkhecwriter) ![PyPI - Downloads](https://img.shields.io/pypi/dm/splunkhecwriter)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/splunkhecwriter) ![PyPI](https://img.shields.io/pypi/v/splunkhecwriter) [![Coverage](coverage.svg)](https://github.com/hellqvio86/splunkhecwriter/actions/workflows/pylint.yml) ![GitHub](https://img.shields.io/github/license/hellqvio86/splunkhecwriter) ![GitHub issues](https://img.shields.io/github/issues-raw/hellqvio86/splunkhecwriter) ![GitHub last commit](https://img.shields.io/github/last-commit/hellqvio86/splunkhecwriter) ![PyPI - Downloads](https://img.shields.io/pypi/dm/splunkhecwriter)
 
 # splunkhecwriter
 

@@ -1,10 +1,14 @@
-.PHONY: setup lint clean build upload renovate renovate-summary
+.PHONY: setup lint test clean build upload renovate renovate-summary
 
 setup:
 	uv sync --locked --group dev
 
 lint:
 	uv run --locked pylint src/splunkhecwriter
+
+test:
+	uv run --locked pytest --cov=splunkhecwriter --cov-fail-under=90 --cov-report=term-missing --cov-report=json tests/
+	uv run --locked python .github/scripts/generate_coverage_badge.py
 
 clean:
 	rm -rf __pycache__ build dist src/*.egg-info
